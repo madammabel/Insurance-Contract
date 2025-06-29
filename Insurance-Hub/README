@@ -1,0 +1,224 @@
+# Decentralized Insurance Protocol
+
+A comprehensive blockchain-based insurance system built on the Stacks blockchain that enables transparent, automated, and decentralized insurance operations.
+
+## Features
+
+### Core Functionality
+- **Dynamic Policy Creation**: Create customizable insurance policies with flexible coverage amounts and premium structures
+- **Automated Premium Collection**: Seamless STX-based premium payment system with detailed transaction tracking
+- **Transparent Claims Processing**: Decentralized claims submission and adjudication workflow
+- **Policy Management**: Complete policy lifecycle management including activation, payments, and cancellation
+- **Real-time Balance Tracking**: Live monitoring of contract funds and financial status
+- **Immutable Record Keeping**: All transactions and policy changes are permanently recorded on-chain
+
+### Advanced Features
+- **Multi-policy Support**: Users can hold multiple active policies simultaneously
+- **Payment History Tracking**: Detailed records of all premium payments with timestamps
+- **Emergency Controls**: Administrative functions for contract management and fund recovery
+- **Comprehensive Validation**: Robust input validation and error handling throughout the system
+- **Status Management**: Real-time policy and claim status tracking
+
+## Prerequisites
+
+- [Clarinet](https://github.com/hirosystems/clarinet) - Stacks smart contract development tool
+- [Node.js](https://nodejs.org/) (v14 or higher)
+- [Stacks CLI](https://docs.stacks.co/build-apps/references/stacks-cli) (optional, for deployment)
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd insurance-contract
+   ```
+
+2. **Initialize Clarinet project**
+   ```bash
+   clarinet check
+   ```
+
+3. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+## Project Structure
+
+```
+├── contracts/
+│   └── Stacks-Insurance.clar    # Main insurance contract
+├── tests/
+│   └── insurance_test.ts        # Test suite
+├── settings/
+│   └── Devnet.toml             # Network configuration
+├── Clarinet.toml               # Project configuration
+└── README.md                   # This file
+```
+
+## Usage
+
+### Creating an Insurance Policy
+
+```clarity
+;; Create a new insurance policy
+(contract-call? .insurance-contract establish-insurance-policy
+  u1000000    ;; Coverage amount (1M µSTX)
+  u50000      ;; Monthly premium (50K µSTX)
+  u144000     ;; Duration in blocks (~1 year)
+)
+```
+
+### Making Premium Payments
+
+```clarity
+;; Pay premium for policy #1
+(contract-call? .insurance-contract submit-premium-payment
+  u1          ;; Policy ID
+  u50000      ;; Payment amount (µSTX)
+)
+```
+
+### Filing Insurance Claims
+
+```clarity
+;; Submit a claim for policy #1
+(contract-call? .insurance-contract file-insurance-claim
+  u1                    ;; Policy ID
+  u500000              ;; Claim amount (µSTX)
+  "Fire damage to property"  ;; Description
+)
+```
+
+### Checking Policy Details
+
+```clarity
+;; Get comprehensive policy information
+(contract-call? .insurance-contract get-policy-summary u1)
+```
+
+##  Contract Functions
+
+## Public Functions
+
+| Function | Description | Parameters |
+|----------|-------------|------------|
+| `establish-insurance-policy` | Create new insurance policy | `coverage-amount`, `premium-amount`, `duration` |
+| `submit-premium-payment` | Pay policy premium | `policy-id`, `payment-amount` |
+| `file-insurance-claim` | Submit insurance claim | `policy-id`, `claim-amount`, `description` |
+| `terminate-insurance-policy` | Cancel existing policy | `policy-id` |
+| `adjudicate-insurance-claim` | Process claim (admin only) | `claim-id`, `approval-decision` |
+| `execute-emergency-withdrawal` | Emergency fund withdrawal (admin only) | `withdrawal-amount` |
+
+### Read-Only Functions
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `get-policy-details` | Get raw policy data | Policy record or none |
+| `get-policy-summary` | Get formatted policy info | Policy summary or none |
+| `get-claim-details` | Get claim information | Claim record or none |
+| `get-contract-financial-status` | Get contract statistics | Financial overview |
+| `verify-policy-active-status` | Check if policy is active | Boolean |
+| `get-premium-payment-details` | Get specific payment info | Payment record or none |
+
+##  Security Features
+
+### Access Control
+- **Owner-only functions**: Critical administrative functions restricted to contract owner
+- **Policy holder verification**: Only policy holders can manage their own policies and claims
+- **Input validation**: Comprehensive validation of all user inputs
+
+### Financial Security
+- **Balance tracking**: Real-time monitoring of contract funds
+- **Insufficient funds protection**: Claims cannot exceed available contract balance
+- **Emergency controls**: Owner can withdraw funds in emergency situations
+
+## Data Integrity
+- **Immutable records**: All transactions permanently recorded on blockchain
+- **Status management**: Proper state transitions for policies and claims
+- **Unique identifiers**: Sequential IDs prevent conflicts and ensure uniqueness
+
+## Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Run specific tests:
+
+```bash
+clarinet test tests/insurance_test.ts
+```
+
+Check contract syntax:
+
+```bash
+clarinet check
+```
+
+## Error Codes
+
+| Code | Error | Description |
+|------|-------|-------------|
+| u100 | `ERR-UNAUTHORIZED-ACCESS` | Caller lacks required permissions |
+| u101 | `ERR-POLICY-NOT-FOUND` | Policy does not exist |
+| u102 | `ERR-POLICY-EXPIRED` | Policy has expired |
+| u103 | `ERR-POLICY-ALREADY-CANCELLED` | Policy is already cancelled |
+| u104 | `ERR-INSUFFICIENT-PREMIUM-AMOUNT` | Payment below required premium |
+| u105 | `ERR-CLAIM-NOT-FOUND` | Claim does not exist |
+| u106 | `ERR-CLAIM-ALREADY-PROCESSED` | Claim has been processed |
+| u107 | `ERR-INVALID-COVERAGE-AMOUNT` | Invalid coverage amount |
+| u108 | `ERR-INVALID-PREMIUM-AMOUNT` | Invalid premium amount |
+| u109 | `ERR-POLICY-ALREADY-EXISTS` | Policy ID already taken |
+| u110 | `ERR-INSUFFICIENT-CONTRACT-FUNDS` | Contract lacks funds for payout |
+| u111 | `ERR-INVALID-CLAIM-AMOUNT` | Invalid claim amount |
+| u112 | `ERR-POLICY-INACTIVE` | Policy is not active |
+
+## Policy Status Codes
+
+| Code | Status | Description |
+|------|--------|-------------|
+| u1 | `policy-status-active` | Policy is active and valid |
+| u2 | `policy-status-expired` | Policy has reached end date |
+| u3 | `policy-status-cancelled` | Policy was cancelled by holder |
+
+## Claim Status Codes
+
+| Code | Status | Description |
+|------|--------|-------------|
+| u1 | `claim-status-pending` | Claim awaiting review |
+| u2 | `claim-status-approved` | Claim approved but not paid |
+| u3 | `claim-status-rejected` | Claim rejected |
+| u4 | `claim-status-paid` | Claim approved and paid |
+
+## Typical Workflow
+
+1. **Policy Creation**: User creates insurance policy with desired coverage and premium
+2. **Premium Payments**: User makes regular premium payments to keep policy active
+3. **Claim Submission**: User submits claim when covered event occurs
+4. **Claim Review**: Contract owner reviews and processes claim
+5. **Payout**: If approved, claim amount is automatically transferred to policy holder
+
+## Deployment
+
+## Testnet Deployment
+1. **Configure network settings in `settings/Testnet.toml`**
+2. **Deploy contract**:
+   ```bash
+   clarinet deployments generate --testnet
+   clarinet deployments apply --testnet
+   ```
+
+## Mainnet Deployment
+1. **Configure network settings in `settings/Mainnet.toml`**
+2. **Deploy contract**:
+   ```bash
+   clarinet deployments generate --mainnet
+   clarinet deployments apply --mainnet
+   ```
+## Documentation
+- [Stacks Documentation](https://docs.stacks.co/)
+- [Clarity Language Reference](https://docs.stacks.co/build-apps/references/language-overview)
+- [Clarinet Documentation](https://github.com/hirosystems/clarinet)
